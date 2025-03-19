@@ -22,7 +22,7 @@ const TaskManagement = () => {
                     }
                 });
 
-                // console.log(response.data);
+                console.log(response.data);
                 setDistributedTasks(response.data.data)
                 setLoading(false);
 
@@ -86,7 +86,7 @@ const TaskManagement = () => {
                 <div className="flex space-x-8 w-full max-w-7xl">
 
                     <div className="w-full bg-white p-6 rounded-lg shadow-md">
-                        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Upload File</h2>
+                        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Upload File and Distribute Tasks</h2>
 
                         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
@@ -103,16 +103,16 @@ const TaskManagement = () => {
                                 onClick={handleFileUpload}
                                 className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
                             >
-                                {loading ? 'Uploading...' : 'Upload and Distribute Tasks'}
+                                {loading ? 'Uploading...' : 'Upload Tasks'}
                             </button>
                         </div>
                     </div>
 
                     <div className="w-full bg-white p-6 rounded-lg shadow-md">
-                        <h3 className="text-3xl font-bold text-gray-800 mb-4 text-center">Distributed Tasks</h3>
+                        <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">Distributed Tasks</h3>
 
                         {loading ? (
-                            <p className="text-gray-500">Loading tasks...</p> 
+                            <p className="text-gray-500">Loading tasks...</p>
                         ) : distributedTasks.length === 0 ? (
                             <p className="text-gray-500">No tasks distributed yet.</p>
                         ) : (
@@ -120,13 +120,13 @@ const TaskManagement = () => {
                                 {distributedTasks.map((agent, index) => (
                                     <li key={index} className="border-b py-2">
                                         <h4 className="text-xl font-bold">{agent.agentName}</h4>
-                                            <ul className="space-y-2">
-                                                {agent.tasks.map((task, taskIndex) => (
-                                                    <li key={taskIndex} className="text-gray-700">
-                                                        Task Name: {task.firstName} | Phone: {task.phone} | Notes: {task.notes}
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                        <ul className="space-y-2">
+                                            {agent.tasks.map((task, taskIndex) => (
+                                                <li key={taskIndex} className="text-gray-700">
+                                                    Task Name: {task.firstName} | Phone: {task.phone} | Notes: {task.notes}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </li>
                                 ))}
                             </ul>

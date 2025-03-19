@@ -49,7 +49,7 @@ const uploadCSVAndDistribute = async (req, res) => {
         return res.status(400).json({ message: 'Unsupported file format' });
       }
 
-      console.log(tasks);
+      // console.log(tasks);
 
       if (!tasks.every(task => task.firstName && task.phone && task.notes)) {
         return res.status(400).json({ message: 'Invalid file format or missing required fields' });
@@ -119,6 +119,7 @@ const distributeTasks = async (tasks) => {
 
     const distributedTasks = agents.map(agent => ({
       agentId: agent._id,
+      agentName: agent.name,
       tasks: [],
     }));
 
@@ -128,8 +129,6 @@ const distributeTasks = async (tasks) => {
 
     let taskIndex = 0;
     for (let i = 0; i < agents.length; i++) {
-      const agent = agents[i];
-
       for (let j = 0; j < tasksPerAgent; j++) {
         if (taskIndex < tasks.length) {
           distributedTasks[i].tasks.push(tasks[taskIndex]);
@@ -171,6 +170,7 @@ const distributeTasks = async (tasks) => {
 
 const getAllTask = async (req, res) => {
   try {
+    const agents = await Agent.find({ role: 'agent' }); 
     const tasks = await ListItem.aggregate([
       {
         $lookup: {
@@ -210,9 +210,14 @@ const getAllTask = async (req, res) => {
       }
     ]);
 
-    if (tasks.length === 0) {
-      return res.status(404).json({ message: 'No tasks found' });
-    }
+    const distributedTasks = agents.map(agent => {
+      const agentTasks = tasks.find(task => task.agentId.toString() === agent._id.toString()) || {
+        agentId: agent._id,
+        agentName: agent.name,
+        tasks: []
+      };
+      return agentTasks;
+    });
 
     // console.log('Distributed Tasks:', tasks);
     res.status(200).json({ message: 'Tasks fetched successfully', data: tasks });
