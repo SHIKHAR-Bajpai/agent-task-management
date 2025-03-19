@@ -42,22 +42,34 @@ const registerUser = async (req, res) => {
 // Function for logging in user(admin)
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
-    
-    const user = await User.findOne({ email });
-    const comparedPassword = await bcrypt.compare(password, user.password);
+    try{
+        const user = await User.findOne({ email });
 
-    if (user && comparedPassword ) {
-        res.json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        mobile: user.mobile,
-        role: user.role,
-        token: generateToken(user.id , user.role),
-        });
-    } 
-    else {
-        res.status(401).json({ message: 'Invalid email or password' });
+        if( !user ){
+            return res.status(401).json({message:" Invalid email or password"})
+        }
+        const comparedPassword = await bcrypt.compare(password, user.password);
+
+        if (!comparedPassword) {
+            return res.status(401).json({ message: 'Invalid password' });
+          }
+
+          
+          if (user && comparedPassword ) {
+              res.json({
+                  _id: user.id,
+                  name: user.name,
+                  email: user.email,
+                  mobile: user.mobile,
+                  role: user.role,
+                  token: generateToken(user.id , user.role),
+                });
+            } 
+            else {
+                res.status(401).json({ message: 'Invalid email or password' });
+            }
+    }catch(error){
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
